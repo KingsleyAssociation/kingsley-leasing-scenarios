@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kingsley Space Leasing Scenarios</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F6F9; --surface:#FFFFFF; --ink:#1C2633; --muted:#5B6878; --line:#DCE1E8; --soft:#EBEFF4;
+  --we:#C9D3E0; --weInk:#2E3A4A; --rent:#2E9A6B; --rentInk:#FFFFFF;
+  --A:#6B7A8F; --B:#1F7A6E; --C:#2D5FA6; --D:#B07519;
+  --pos:#1F7A6E; --neg:#B23B3B; --warn:#B07519;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#12171E; --surface:#1A212A; --ink:#E6EBF1; --muted:#9AA6B4; --line:#2C3642; --soft:#232C37;
+    --we:#3A4656; --weInk:#E1E7EE; --rent:#2F9E70; --rentInk:#FFFFFF;
+    --A:#8C9AAE; --B:#3FAE9E; --C:#6A97DC; --D:#D99A3A; --pos:#4BC0A8; --neg:#E07070; --warn:#D99A3A;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12171E; --surface:#1A212A; --ink:#E6EBF1; --muted:#9AA6B4; --line:#2C3642; --soft:#232C37;
+  --we:#3A4656; --weInk:#E1E7EE; --rent:#2F9E70; --rentInk:#FFFFFF;
+  --A:#8C9AAE; --B:#3FAE9E; --C:#6A97DC; --D:#D99A3A; --pos:#4BC0A8; --neg:#E07070; --warn:#D99A3A;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 "Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+h1,h2{font-family:"Newsreader",Georgia,serif;font-weight:600;margin:0;letter-spacing:-.01em}
+h1{font-size:clamp(28px,5vw,40px);line-height:1.12}
+h2{font-size:24px;line-height:1.2;margin-bottom:12px}
+p{margin:0 0 10px}
+.wrap{max-width:900px;margin:0 auto;padding:26px 18px 60px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px}
+section{margin-top:34px}
+.lede{font-size:18px;color:var(--muted);margin-top:10px;max-width:60ch}
+
+/* answer */
+.answer{margin-top:22px;border-left:6px solid var(--B)}
+.answer .big{font-size:clamp(20px,3.4vw,26px);font-weight:700;line-height:1.3;margin-bottom:8px}
+.answer .but{color:var(--muted);font-size:16px;margin:0}
+
+/* scenario buttons */
+.pick{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media (max-width:640px){.pick{grid-template-columns:repeat(2,1fr)}}
+.pick button{font:inherit;text-align:left;border:2px solid var(--line);background:var(--surface);color:var(--ink);border-radius:14px;padding:12px 14px;cursor:pointer;min-height:84px}
+.pick button .l{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;color:#fff;font-weight:800;margin-bottom:6px}
+.pick button b{display:block;font-size:15px;line-height:1.25}
+.pick button[aria-pressed=true]{border-color:var(--cur);box-shadow:0 0 0 3px color-mix(in srgb,var(--cur) 25%,transparent)}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--C);outline-offset:2px}
+
+/* detail card */
+.detail{margin-top:14px;border-top:6px solid var(--cur)}
+.detail .what{font-size:18px;font-weight:600;margin-bottom:16px;line-height:1.35}
+.money{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;margin-bottom:18px}
+.money .n{font-size:clamp(40px,8vw,56px);font-weight:800;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
+.money .cap{color:var(--muted);font-size:15px;width:100%}
+.chip{display:inline-block;padding:5px 12px;border-radius:999px;font-weight:700;font-size:15px}
+.chip.pos{background:color-mix(in srgb,var(--pos) 16%,transparent);color:var(--pos)}
+.chip.neg{background:color-mix(in srgb,var(--neg) 16%,transparent);color:var(--neg)}
+.chip.zero{background:var(--soft);color:var(--muted)}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+@media (max-width:640px){.facts{grid-template-columns:1fr}}
+.fact{background:var(--soft);border-radius:12px;padding:12px 14px}
+.fact .ico{font-size:22px;line-height:1}
+.fact .t{font-size:13px;color:var(--muted);margin-top:6px}
+.fact .v{font-size:18px;font-weight:700;line-height:1.25}
+.fact .s{font-size:13.5px;color:var(--muted);margin-top:2px}
+.meter{height:10px;background:var(--line);border-radius:6px;margin-top:8px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--cur);border-radius:6px;transition:width .35s}
+
+/* building */
+.bldg{display:flex;flex-direction:column;gap:6px}
+.floor{display:grid;grid-template-columns:38px 1fr;gap:8px;align-items:stretch}
+.fl{display:grid;place-items:center;font-weight:800;font-size:14px;color:var(--muted);background:var(--soft);border-radius:8px}
+.rooms{display:flex;gap:4px;min-height:58px}
+.room{flex-grow:var(--g);flex-basis:0;min-width:46px;border-radius:8px;padding:6px 7px;font-size:12px;line-height:1.2;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;transition:background .3s,color .3s}
+.room.we{background:var(--we);color:var(--weInk)}
+.room.rent{background:var(--rent);color:var(--rentInk)}
+.room.empty{background:transparent;border:2px dashed var(--line);color:var(--muted)}
+.room b{font-size:12.5px;font-weight:700;overflow-wrap:anywhere}
+.room span{opacity:.85;font-size:11.5px}
+.key{display:flex;gap:16px;flex-wrap:wrap;font-size:14px;margin-top:10px;color:var(--muted)}
+.key i{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:6px}
+@media (prefers-reduced-motion:reduce){.room,.meter i,.bar i{transition:none}}
+
+/* compare bars */
+.bars{display:flex;flex-direction:column;gap:12px}
+.bar{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:center;background:none;border:0;padding:0;font:inherit;color:inherit;text-align:left;cursor:pointer}
+.bar .nm{font-weight:700;font-size:15px;line-height:1.2}
+.bar .nm small{display:block;font-weight:400;color:var(--muted);font-size:13px}
+.bar .tr{position:relative;height:38px;background:var(--soft);border-radius:10px;overflow:hidden}
+.bar i{position:absolute;left:0;top:0;bottom:0;border-radius:10px;transition:width .35s}
+.bar .vl{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-weight:800;color:#fff;font-size:16px;text-shadow:0 1px 2px rgba(0,0,0,.25)}
+.bar[aria-pressed=true] .tr{outline:3px solid var(--ink);outline-offset:2px}
+
+/* watch-outs */
+.watch{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media (max-width:700px){.watch{grid-template-columns:1fr}}
+.watch .card{padding:16px}
+.watch .ico{font-size:26px}
+.watch b{display:block;font-size:17px;margin:6px 0 4px;line-height:1.3}
+.watch p{color:var(--muted);font-size:15px;margin:0}
+
+/* collapsibles */
+details{background:var(--surface);border:1px solid var(--line);border-radius:16px;margin-top:12px}
+summary{cursor:pointer;padding:16px 20px;font-weight:700;font-size:17px;list-style:none;display:flex;justify-content:space-between;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-size:24px;font-weight:400;color:var(--muted)}
+details[open] summary::after{content:"–"}
+.inner{padding:0 20px 20px}
+.ctlgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px 28px}
+@media (max-width:640px){.ctlgrid{grid-template-columns:1fr}}
+.ctl{margin-bottom:14px}
+.ctl label{display:flex;justify-content:space-between;font-size:14.5px;gap:10px}
+.ctl label b{font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--C);margin:6px 0 0}
+input[type=range]:disabled{opacity:.35}
+.check{display:flex;gap:9px;align-items:flex-start;font-size:14.5px;margin:8px 0;cursor:pointer}
+.check input{margin-top:4px;accent-color:var(--C);width:17px;height:17px}
+.check small{display:block;color:var(--muted)}
+.grp{font-weight:700;font-size:14px;margin:6px 0 8px;color:var(--muted)}
+.seg{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;margin-top:6px}
+.seg button{flex:1;border:0;background:transparent;color:var(--ink);font:inherit;font-size:14.5px;padding:9px 0;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--surface)}
+.reset{margin-top:6px;padding:10px 16px;border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:9px;font:inherit;font-size:14.5px;cursor:pointer}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px;font-variant-numeric:tabular-nums}
+th,td{padding:9px 10px;text-align:right;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+thead th{background:var(--soft)}
+tr.total td{font-weight:800}
+.pos{color:var(--pos)}.neg{color:var(--neg)}
+.fine{font-size:14px;color:var(--muted)}
+.fine li{margin-bottom:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Should Kingsley move downstairs and rent out the 2nd floor?</h1>
+  <p class="lede">Jeremiah’s Place on the 1st floor is empty. We can rent it out, or move our own staff into it and rent out the 2nd floor instead. Here’s what each choice means.</p>
+  <div class="card answer" id="answer"></div>
+</header>
+
+<section>
+  <h2>Tap an option</h2>
+  <div class="pick" id="pick"></div>
+  <div class="card detail" id="detail"></div>
+</section>
+
+<section>
+  <h2>All four side by side</h2>
+  <p class="fine" id="cmpNote" style="margin-bottom:14px"></p>
+  <div class="card"><div class="bars" id="bars"></div></div>
+</section>
+
+<section>
+  <h2>Things to watch</h2>
+  <div class="watch" id="watch"></div>
+</section>
+
+<section>
+  <details id="tryit">
+    <summary>Try different numbers</summary>
+    <div class="inner">
+      <div class="ctlgrid">
+        <div>
+          <div class="grp">Rent we charge</div>
+          <label class="check"><input type="checkbox" id="useList" checked><span>Use our listed prices<small>Turn off to try a lower price per square foot</small></span></label>
+          <div class="ctl"><label for="rate">Price per square foot <b id="rateV"></b></label><input type="range" id="rate" min="16" max="24" step="0.5" value="20"></div>
+          <div class="grp">Upfront costs</div>
+          <div class="ctl"><label for="base">Fix‑up (paint, rugs, bathrooms) <b id="baseV"></b></label><input type="range" id="base" min="0" max="30000" step="1000" value="15000"></div>
+          <div class="ctl"><label for="moveBC">Moving + internet, B and C <b id="moveBCV"></b></label><input type="range" id="moveBC" min="0" max="80000" step="2500" value="35000"></div>
+          <div class="ctl"><label for="moveD">Moving + internet, D <b id="moveDV"></b></label><input type="range" id="moveD" min="0" max="80000" step="2500" value="40000"></div>
+        </div>
+        <div>
+          <div class="grp">Months a space sits empty before it’s rented</div>
+          <div class="ctl"><label for="lagP">Jeremiah’s Place, 3rd Fl Office <b id="lagPV"></b></label><input type="range" id="lagP" min="0" max="12" step="0.5" value="1.5"></div>
+          <div class="ctl"><label for="lag2">2nd‑floor spaces <b id="lag2V"></b></label><input type="range" id="lag2" min="0" max="18" step="0.5" value="3.5"></div>
+          <div class="ctl"><label for="lagS">3rd‑floor studios <b id="lagSV"></b></label><input type="range" id="lagS" min="0" max="18" step="0.5" value="4"></div>
+          <div class="grp">Rent out 3rd‑floor studios too?</div>
+          <label class="check"><input type="checkbox" class="studio" data-i="0"><span>Community Room<small>2,325 sq ft</small></span></label>
+          <label class="check"><input type="checkbox" class="studio" data-i="1"><span>Yoga Studio<small>2,525 sq ft</small></span></label>
+          <label class="check"><input type="checkbox" class="studio" data-i="2"><span>Pilates / Dance Studio<small>2,125 sq ft</small></span></label>
+          <label class="check"><input type="checkbox" id="igia" checked><span>IGIA keeps renting ($500/mo)<small>Turn off if their short lease ends anyway</small></span></label>
+          <div class="ctl"><label>Look ahead</label>
+            <div class="seg" role="group" aria-label="Years to look ahead"><button data-h="3" aria-pressed="true">3 years</button><button data-h="5" aria-pressed="false">5 years</button></div>
+          </div>
+        </div>
+      </div>
+      <button class="reset" id="reset">Go back to the starting numbers</button>
+    </div>
+  </details>
+
+  <details>
+    <summary>Full numbers and notes</summary>
+    <div class="inner">
+      <div class="tablewrap"><table id="tbl"></table></div>
+      <ul class="fine" style="margin-top:16px;padding-left:18px">
+        <li>Money in = rent collected after year‑1 empty months, minus fix‑up and moving costs.</li>
+        <li>The Seminar Room stays with Kingsley in every option. Esther Mattes’ office ($350/mo) doesn’t change and is left out.</li>
+        <li>Private Offices A &amp; B no longer exist as separate rentals; they’re part of the 2nd Fl Office Suite, so they aren’t counted on their own.</li>
+        <li>The 632 sq ft corridor between Suites 206 and 212 isn’t counted in any option; it only becomes usable if one party holds both suites.</li>
+        <li>In C and D, Kingsley keeps the Lounge inside Suite 212 while a renter takes the DIC, which needs a separate entry or wall.</li>
+        <li>The tracker lists the 3rd Fl Office as opening end of June 2027. Every option counts its rent in year 1.</li>
+        <li>Sources: KA Space Leasing Tracker 2026 and 2025 floor plans (tracker square footage used).</li>
+      </ul>
+    </div>
+  </details>
+</section>
+</div>
+
+<script>
+const SP={
+  JP:{n:"Jeremiah’s Place",sf:3500,list:84000,g:"P"},
+  DIC:{n:"DIC",sf:2770,list:67200,g:"2"},
+  OFF:{n:"Office Suite",sf:3290,list:78960,g:"2"},
+  LNG:{n:"Lounge",sf:316,list:7800,g:"2"},
+  SEM:{n:"Seminar",sf:835,list:20040,g:"2"},
+  UNI:{n:"Black Unicorn",sf:727,list:17496,g:"2"},
+  IGIA:{n:"IGIA",sf:397,list:6000,g:"X"},
+  O3:{n:"3rd Fl Office",sf:1632,list:39168,g:"P"}
+};
+const STUDIOS=[{n:"Community Room",sf:2325,list:55800},{n:"Yoga",sf:2525,list:60600},{n:"Pilates",sf:2125,list:51000}];
+const OPT={
+  A:{name:"Stay put",what:"Staff stay on the 2nd floor. We rent Jeremiah’s Place to one of the daycares already looking at it.",lease:["JP","UNI","O3"],keep:["DIC","OFF","LNG","SEM"],igia:true,move:"none",
+     moveTxt:["No move","Nothing changes for staff"],risk:["Low","Two daycares are already reviewing leases for JP"]},
+  B:{name:"Move to JP + Suite 206",what:"Staff move into Jeremiah’s Place and the Unicorn/IGIA rooms. We rent out the whole DIC side and Office Suite.",lease:["DIC","OFF","LNG","O3"],keep:["JP","UNI","IGIA","SEM"],igia:false,move:"BC",
+     moveTxt:["One move","Staff on 1st and 2nd floors"],risk:["Medium","No renters lined up yet for the 2nd floor"]},
+  C:{name:"Move to JP + Unicorn",what:"Staff move into Jeremiah’s Place and the Unicorn room. IGIA stays. We rent out the DIC and Office Suite.",lease:["DIC","OFF","O3"],keep:["JP","UNI","LNG","SEM"],igia:true,move:"BC",
+     moveTxt:["One move","Staff on 1st and 2nd floors"],risk:["Medium","No renters lined up yet for the 2nd floor"]},
+  D:{name:"Split: 1st + 3rd floor",what:"Staff split between Jeremiah’s Place and the 3rd Fl Office. We rent out most of the 2nd floor.",lease:["DIC","OFF","UNI"],keep:["JP","O3","LNG","SEM"],igia:true,move:"D",
+     moveTxt:["Split move","Staff spread over 3 floors"],risk:["Medium","No 2nd‑floor renters yet, and costs the most to move"]}
+};
+const FLOORS=[["3",["O3","STUDIOS"]],["2",["DIC","LNG","SEM","UNI","IGIA","OFF"]],["1",["JP"]]];
+const DEF={useList:true,rate:20,base:15000,moveBC:35000,moveD:40000,lagP:1.5,lag2:3.5,lagS:4,igia:true,studios:[false,false,false],h:3,sel:"B"};
+let st=JSON.parse(JSON.stringify(DEF));
+const $=id=>document.getElementById(id);
+const money=v=>(v<0?"−":"")+"$"+Math.abs(Math.round(v)).toLocaleString("en-US");
+const k=v=>(v<0?"−":"")+"$"+Math.round(Math.abs(v)/1000).toLocaleString("en-US")+"k";
+
+function rent(id,s){const p=SP[id];return s.useList?p.list:p.sf*s.rate}
+function calc(key,s){
+  const o=OPT[key];let steady=0,vac=0;
+  o.lease.forEach(id=>{const r=rent(id,s);steady+=r;vac+=r*(SP[id].g==="P"?s.lagP:s.lag2)/12});
+  steady+=(o.igia&&s.igia)?6000:0;
+  let studSF=0;
+  STUDIOS.forEach((x,i)=>{if(s.studios[i]){const r=s.useList?x.list:x.sf*s.rate;steady+=r;vac+=r*s.lagS/12;studSF+=x.sf}});
+  const capex=s.base+(o.move==="BC"?s.moveBC:o.move==="D"?s.moveD:0);
+  return{steady,vac,capex,net:steady*s.h-vac-capex,keepSF:o.keep.reduce((a,id)=>a+SP[id].sf,0),studSF,
+    leasedSF:o.lease.reduce((a,id)=>a+SP[id].sf,0)+studSF};
+}
+function breakeven(key){
+  const s0=JSON.parse(JSON.stringify(st));
+  if(calc(key,s0).net<=calc("A",s0).net)return null;
+  for(let L=s0.lag2;L<=60;L+=0.5){const s={...s0,lag2:L};if(calc(key,s).net<=calc("A",s).net)return L}
+  return 60;
+}
+function chip(d){if(Math.abs(d)<500)return `<span class="chip zero">Same as staying put</span>`;
+  return `<span class="chip ${d>0?"pos":"neg"}">${d>0?"▲ "+k(d)+" more":"▼ "+k(-d)+" less"} than staying put</span>`}
+
+function buildingHTML(key){
+  const o=OPT[key];
+  return `<div class="bldg">`+FLOORS.map(([f,ids])=>`<div class="floor"><div class="fl">${f}</div><div class="rooms">`+ids.map(id=>{
+    if(id==="STUDIOS"){
+      const n=st.studios.filter(Boolean).length;
+      return `<div class="room ${n?"rent":"we"}" style="--g:4"><b>Studios</b><span>${n?n+" of 3 rented":"We use"}</span></div>`;
+    }
+    let cls,lab;
+    if(id==="IGIA"){if(!o.igia){cls="we";lab="We use"}else if(st.igia){cls="rent";lab="Rented"}else{cls="empty";lab="Empty"}}
+    else if(o.lease.includes(id)){cls="rent";lab="Rented"}else{cls="we";lab="We use"}
+    return `<div class="room ${cls}" style="--g:${Math.max(SP[id].sf,500)}"><b>${SP[id].n}</b><span>${lab}</span></div>`;
+  }).join("")+`</div></div>`).join("")+`</div>
+  <div class="key"><span><i style="background:var(--we)"></i>Kingsley uses it</span><span><i style="background:var(--rent)"></i>Renter pays us</span></div>`;
+}
+
+function render(){
+  const R={};Object.keys(OPT).forEach(x=>R[x]=calc(x,st));
+  const keys=Object.keys(OPT),cur=`var(--${st.sel})`;
+  document.documentElement.style.setProperty("--cur",getComputedStyle(document.documentElement).getPropertyValue("--"+st.sel));
+
+  // answer
+  const best=keys.slice().sort((a,b)=>R[b].net-R[a].net)[0];
+  const beB=breakeven("B"),beC=breakeven("C");
+  const be=[beB,beC].filter(x=>x!==null);
+  let a;
+  if(best==="A"||!be.length){a=`<div class="big">Right now, staying put and renting Jeremiah’s Place is the safer and better choice.</div><p class="but">With these numbers, moving costs more than it earns.</p>`}
+  else{const g=R[best].net-R.A.net;
+    a=`<div class="big">Moving downstairs could bring in about ${k(g)} more over ${st.h} years than staying put.</div>
+    <p class="but">But only if we find renters for the 2nd floor within about ${Math.floor(Math.min(...be))} months. Jeremiah’s Place already has two daycares interested; the 2nd floor has none yet.</p>`}
+  $("answer").innerHTML=a;$("answer").style.borderLeftColor=`var(--${best})`;
+
+  // pick buttons
+  $("pick").innerHTML=keys.map(x=>`<button aria-pressed="${x===st.sel}" data-k="${x}" style="--cur:var(--${x})"><span class="l" style="background:var(--${x})">${x}</span><b>${OPT[x].name}</b></button>`).join("");
+  $("pick").querySelectorAll("button").forEach(b=>b.onclick=()=>{st.sel=b.dataset.k;render()});
+
+  // detail
+  const o=OPT[st.sel],r=R[st.sel],d=r.net-R.A.net;
+  const pct=Math.round(r.keepSF/7211*100);
+  const spaceTxt=pct>=100?"Same room as today":pct>=85?"A little less room":"About ¾ of today’s room";
+  const riskCol=o.risk[0]==="Low"?"var(--pos)":"var(--warn)";
+  $("detail").style.borderTopColor=`var(--${st.sel})`;
+  $("detail").innerHTML=`
+    <div class="what">${o.what}</div>
+    <div class="money"><span class="n">${k(r.net)}</span>${st.sel==="A"?"":chip(d)}
+      <span class="cap">Money in over ${st.h} years, after fix‑up and moving costs</span></div>
+    <div class="facts">
+      <div class="fact"><div class="ico">📦</div><div class="t">Moving</div><div class="v">${o.moveTxt[0]}</div><div class="s">${o.moveTxt[1]}</div></div>
+      <div class="fact"><div class="ico">🪑</div><div class="t">Room for staff</div><div class="v">${spaceTxt}</div><div class="s">${r.keepSF.toLocaleString()} of today’s 7,211 sq ft${r.studSF?"; studios rented too":""}</div><div class="meter"><i style="width:${Math.min(pct,100)}%"></i></div></div>
+      <div class="fact"><div class="ico">${o.risk[0]==="Low"?"🟢":"🟡"}</div><div class="t">Risk</div><div class="v" style="color:${riskCol}">${o.risk[0]}</div><div class="s">${o.risk[1]}</div></div>
+    </div>
+    ${buildingHTML(st.sel)}`;
+
+  // bars
+  const max=Math.max(...keys.map(x=>R[x].net),1);
+  $("cmpNote").textContent=`Money in over ${st.h} years. Tap a bar to see that option.`;
+  $("bars").innerHTML=keys.map(x=>{const w=Math.max(18,R[x].net/max*100);
+    return `<button class="bar" data-k="${x}" aria-pressed="${x===st.sel}"><div class="nm">${x}. ${OPT[x].name.split(" + ")[0].replace("Split: ","Split")}<small>${x==="A"?"starting point":(R[x].net-R.A.net>=0?"+":"−")+k(Math.abs(R[x].net-R.A.net)).replace("−","")+" vs. A"}</small></div>
+    <div class="tr"><i style="width:${w}%;background:var(--${x})"></i><span class="vl">${k(R[x].net)}</span></div></button>`}).join("");
+  $("bars").querySelectorAll(".bar").forEach(b=>b.onclick=()=>{st.sel=b.dataset.k;render();$("pick").scrollIntoView({behavior:"smooth",block:"start"})});
+
+  // watch
+  const yearGain=R.B.steady-R.A.steady;
+  $("watch").innerHTML=`
+    <div class="card"><div class="ico">⏳</div><b>Empty space costs money</b><p>${be.length?`If the 2nd floor sits empty more than about ${Math.floor(Math.min(...be))} months, moving stops paying off.`:"At these numbers, moving doesn’t pay off even if the 2nd floor rents quickly."}</p></div>
+    <div class="card"><div class="ico">🏷️</div><b>Lower rent, smaller win</b><p>If renters ask for a discount to fix up their space, the gain from moving shrinks. Try it in “Try different numbers.”</p></div>
+    <div class="card"><div class="ico">🚫</div><b>Option D doesn’t pay off</b><p>It earns about the same as staying put, costs the most to move, and spreads staff over three floors.</p></div>`;
+
+  // controls labels
+  $("rate").disabled=st.useList;
+  $("rateV").textContent=st.useList?"listed (~$24)":"$"+st.rate+" / sq ft";
+  $("baseV").textContent=money(st.base);$("moveBCV").textContent=money(st.moveBC);$("moveDV").textContent=money(st.moveD);
+  ["lagP","lag2","lagS"].forEach(id=>$(id+"V").textContent=st[id]+" months");
+
+  // table
+  const rows=[
+    ["Rent per year, once full",x=>money(R[x].steady)],
+    ["Lost to empty months (year 1)",x=>money(-R[x].vac)],
+    ["Fix‑up + moving costs",x=>money(-R[x].capex)],
+    [`Money in, ${st.h} years`,x=>money(R[x].net),"total"],
+    ["Compared with staying put",x=>{const d=R[x].net-R.A.net;return x==="A"?"—":`<span class="${d>=0?"pos":"neg"}">${d>=0?"+":""}${money(d)}</span>`}],
+    ["Square feet rented out",x=>R[x].leasedSF.toLocaleString()],
+    ["Square feet Kingsley keeps",x=>R[x].keepSF.toLocaleString()]
+  ];
+  $("tbl").innerHTML=`<thead><tr><th></th>${keys.map(x=>`<th>${x}</th>`).join("")}</tr></thead><tbody>`+
+    rows.map(([l,f,c])=>`<tr class="${c||""}"><td>${l}</td>${keys.map(x=>`<td>${f(x)}</td>`).join("")}</tr>`).join("")+"</tbody>";
+}
+function sync(){
+  $("useList").checked=st.useList;["rate","base","moveBC","moveD","lagP","lag2","lagS"].forEach(id=>$(id).value=st[id]);
+  $("igia").checked=st.igia;document.querySelectorAll(".studio").forEach(c=>c.checked=st.studios[+c.dataset.i]);
+  document.querySelectorAll(".seg button").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.h===st.h));
+  render();
+}
+["rate","base","moveBC","moveD","lagP","lag2","lagS"].forEach(id=>$(id).addEventListener("input",e=>{st[id]=+e.target.value;render()}));
+$("useList").addEventListener("change",e=>{st.useList=e.target.checked;render()});
+$("igia").addEventListener("change",e=>{st.igia=e.target.checked;render()});
+document.querySelectorAll(".studio").forEach(c=>c.addEventListener("change",e=>{st.studios[+c.dataset.i]=e.target.checked;render()}));
+document.querySelectorAll(".seg button").forEach(b=>b.addEventListener("click",()=>{st.h=+b.dataset.h;sync()}));
+$("reset").addEventListener("click",()=>{const sel=st.sel;st=JSON.parse(JSON.stringify(DEF));st.sel=sel;sync()});
+sync();
+</script>
+</body>
+</html>
