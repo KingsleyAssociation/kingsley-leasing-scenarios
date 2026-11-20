@@ -46,6 +46,7 @@ section{margin-top:34px}
 .answer{margin-top:22px;border-left:6px solid var(--B)}
 .answer .big{font-size:clamp(20px,3.4vw,26px);font-weight:700;line-height:1.3;margin-bottom:8px}
 .answer .but{color:var(--muted);font-size:16px;margin:0}
+.model-link{display:inline-block;margin-top:12px;color:var(--C);text-underline-offset:3px}
 
 /* scenario buttons */
 .pick{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
@@ -98,7 +99,8 @@ button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid
 .bar .nm small{display:block;font-weight:400;color:var(--muted);font-size:13px}
 .bar .tr{position:relative;height:38px;background:var(--soft);border-radius:10px;overflow:hidden}
 .bar i{position:absolute;left:0;top:0;bottom:0;border-radius:10px;transition:width .35s}
-.bar .vl{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-weight:800;color:#fff;font-size:16px;text-shadow:0 1px 2px rgba(0,0,0,.25)}
+.bar .vl{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:var(--surface);color:var(--ink);border-radius:5px;padding:0 5px;font-weight:800;font-size:16px}
+.bars.signed .tr::after{content:"";position:absolute;left:clamp(0px,var(--zero),calc(100% - 1px));top:0;bottom:0;border-left:1px solid var(--ink);pointer-events:none}
 .bar[aria-pressed=true] .tr{outline:3px solid var(--ink);outline-offset:2px}
 
 /* watch-outs */
@@ -127,9 +129,12 @@ input[type=range]:disabled{opacity:.35}
 .check input{margin-top:4px;accent-color:var(--C);width:17px;height:17px}
 .check small{display:block;color:var(--muted)}
 .grp{font-weight:700;font-size:14px;margin:6px 0 8px;color:var(--muted)}
-.seg{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;margin-top:6px}
-.seg button{flex:1;border:0;background:transparent;color:var(--ink);font:inherit;font-size:14.5px;padding:9px 0;cursor:pointer}
-.seg button[aria-pressed=true]{background:var(--ink);color:var(--surface)}
+.lease-model{border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:18px}
+.lease-model h3{font-size:19px;margin:0 0 12px}
+.lease-model .fine{margin:4px 0 10px}
+.lease-result{background:var(--soft);border-radius:10px;padding:14px;margin:12px 0 0}
+.lease-result strong{display:block;margin-bottom:4px}
+.lease-result p{margin:0}
 .reset{margin-top:6px;padding:10px 16px;border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:9px;font:inherit;font-size:14.5px;cursor:pointer}
 .tablewrap{overflow-x:auto}
 table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px;font-variant-numeric:tabular-nums}
@@ -149,6 +154,7 @@ tr.total td{font-weight:800}
   <h1>Should Kingsley move downstairs and rent out the 2nd floor?</h1>
   <p class="lede">Jeremiah’s Place on the 1st floor is empty. We can rent it out, or move our own staff into it and rent out the 2nd floor instead. Here’s what each choice means.</p>
   <div class="card answer" id="answer"></div>
+  <a class="model-link" id="leaseLink" href="#tryit">Compare renovation costs and lease lengths</a>
 </header>
 
 <section>
@@ -172,13 +178,33 @@ tr.total td{font-weight:800}
   <details id="tryit">
     <summary>Try different numbers</summary>
     <div class="inner">
+      <div class="lease-model">
+        <h3>First-floor renovations and lease length</h3>
+        <div class="ctlgrid">
+          <div class="ctl">
+            <label for="base">Jeremiah’s Place renovation budget <b id="baseV"></b></label>
+            <input type="range" id="base" min="0" max="500000" step="1000" value="15000">
+            <p class="fine">$0 to $500,000 in $1,000 steps</p>
+          </div>
+          <div class="ctl">
+            <label for="h">Proposed lease term <b id="termV"></b></label>
+            <input type="range" id="h" min="3" max="20" step="1" value="3">
+            <p class="fine">3 to 20 years. The building comparison uses the same number of years.</p>
+          </div>
+        </div>
+        <label class="check"><input type="checkbox" id="sameBudget" checked><span>Use the same renovation budget if Kingsley moves into the suite (B, C and D)</span></label>
+        <div class="ctl" id="staffBudgetControl" hidden>
+          <label for="staffBudget">Renovations for Kingsley staff (B, C and D) <b id="staffBudgetV"></b></label>
+          <input type="range" id="staffBudget" min="0" max="500000" step="1000" value="15000">
+        </div>
+        <div class="lease-result" id="recovery" aria-live="polite"></div>
+      </div>
       <div class="ctlgrid">
         <div>
           <div class="grp">Rent we charge</div>
           <label class="check"><input type="checkbox" id="useList" checked><span>Use our listed prices<small>Turn off to try a lower price per square foot</small></span></label>
           <div class="ctl"><label for="rate">Price per square foot <b id="rateV"></b></label><input type="range" id="rate" min="16" max="24" step="0.5" value="20"></div>
           <div class="grp">Upfront costs</div>
-          <div class="ctl"><label for="base">Fix‑up (paint, rugs, bathrooms) <b id="baseV"></b></label><input type="range" id="base" min="0" max="30000" step="1000" value="15000"></div>
           <div class="ctl"><label for="moveBC">Moving + internet, B and C <b id="moveBCV"></b></label><input type="range" id="moveBC" min="0" max="80000" step="2500" value="35000"></div>
           <div class="ctl"><label for="moveD">Moving + internet, D <b id="moveDV"></b></label><input type="range" id="moveD" min="0" max="80000" step="2500" value="40000"></div>
         </div>
@@ -192,9 +218,6 @@ tr.total td{font-weight:800}
           <label class="check"><input type="checkbox" class="studio" data-i="1"><span>Yoga Studio<small>2,525 sq ft</small></span></label>
           <label class="check"><input type="checkbox" class="studio" data-i="2"><span>Pilates / Dance Studio<small>2,125 sq ft</small></span></label>
           <label class="check"><input type="checkbox" id="igia" checked><span>IGIA keeps renting ($500/mo)<small>Turn off if their short lease ends anyway</small></span></label>
-          <div class="ctl"><label>Look ahead</label>
-            <div class="seg" role="group" aria-label="Years to look ahead"><button data-h="3" aria-pressed="true">3 years</button><button data-h="5" aria-pressed="false">5 years</button></div>
-          </div>
         </div>
       </div>
       <button class="reset" id="reset">Go back to the starting numbers</button>
@@ -206,7 +229,8 @@ tr.total td{font-weight:800}
     <div class="inner">
       <div class="tablewrap"><table id="tbl"></table></div>
       <ul class="fine" style="margin-top:16px;padding-left:18px">
-        <li>Money in = rent collected after year‑1 empty months, minus fix‑up and moving costs.</li>
+        <li>The building comparison starts today. It subtracts initial vacancy, first-floor renovations and moving costs once. Rents stay flat over the selected period.</li>
+        <li>The first-floor lease calculation starts when the tenant begins paying rent. It uses only rent from Jeremiah’s Place. Both calculations exclude operating expenses, financing and inflation.</li>
         <li>The Seminar Room stays with Kingsley in every option. Esther Mattes’ office ($350/mo) doesn’t change and is left out.</li>
         <li>Private Offices A &amp; B no longer exist as separate rentals; they’re part of the 2nd Fl Office Suite, so they aren’t counted on their own.</li>
         <li>The 632 sq ft corridor between Suites 206 and 212 isn’t counted in any option; it only becomes usable if one party holds both suites.</li>
@@ -245,7 +269,7 @@ const OPT={
      moveTxt:["Split move","Staff spread over 3 floors"],risk:["Medium","No 2nd‑floor renters yet, and costs the most to move"]}
 };
 const FLOORS=[["3",["O3","STUDIOS"]],["2",["DIC","LNG","SEM","UNI","IGIA","OFF"]],["1",["JP","HAB"]]];
-const DEF={useList:true,rate:20,base:15000,moveBC:35000,moveD:40000,lagP:1.5,lag2:3.5,lagS:4,igia:true,studios:[false,false,false],h:3,sel:"B"};
+const DEF={useList:true,rate:20,base:15000,sameBudget:true,staffBudget:15000,moveBC:35000,moveD:40000,lagP:1.5,lag2:3.5,lagS:4,igia:true,studios:[false,false,false],h:3,sel:"B"};
 let st=JSON.parse(JSON.stringify(DEF));
 const $=id=>document.getElementById(id);
 const money=v=>(v<0?"−":"")+"$"+Math.abs(Math.round(v)).toLocaleString("en-US");
@@ -259,15 +283,28 @@ function calc(key,s){
   steady+=(o.igia&&s.igia)?6000:0;
   let studSF=0;
   STUDIOS.forEach((x,i)=>{if(s.studios[i]){const r=s.useList?x.list:x.sf*s.rate;steady+=r;vac+=r*s.lagS/12;studSF+=x.sf}});
-  const capex=s.base+(o.move==="BC"?s.moveBC:o.move==="D"?s.moveD:0);
-  return{steady,vac,capex,net:steady*s.h-vac-capex,keepSF:o.keep.reduce((a,id)=>a+SP[id].sf,0),studSF,
+  const renovation=(key==="A"||s.sameBudget)?s.base:s.staffBudget;
+  const moving=o.move==="BC"?s.moveBC:o.move==="D"?s.moveD:0;
+  const capex=renovation+moving;
+  return{steady,vac,renovation,moving,capex,net:steady*s.h-vac-capex,keepSF:o.keep.reduce((a,id)=>a+SP[id].sf,0),studSF,
     leasedSF:SP.HAB.sf+o.lease.reduce((a,id)=>a+SP[id].sf,0)+studSF};
 }
-function breakeven(key){
-  const s0=JSON.parse(JSON.stringify(st));
-  if(calc(key,s0).net<=calc("A",s0).net)return null;
-  for(let L=s0.lag2;L<=60;L+=0.5){const s={...s0,lag2:L};if(calc(key,s).net<=calc("A",s).net)return L}
-  return 60;
+function secondFloorThreshold(key,s){
+  const fullMonths=s.h*12;
+  const atMonths=months=>{
+    const settings={...s,lag2:months};
+    return calc(key,settings).net-calc("A",settings).net;
+  };
+  const initialGain=atMonths(0), finalGain=atMonths(fullMonths);
+  if(initialGain<=0)return 0;
+  if(finalGain>0)return null;
+  return fullMonths*initialGain/(initialGain-finalGain);
+}
+function leaseRecovery(s){
+  const monthlyRent=rent("JP",s)/12;
+  const paidMonths=Math.ceil(s.base/monthlyRent);
+  const termRent=s.h*12*monthlyRent;
+  return {monthlyRent,paidMonths,termRent,balance:termRent-s.base,monthlyRecovery:s.base/(s.h*12)};
 }
 function chip(d){if(Math.abs(d)<500)return `<span class="chip zero">Same as staying put</span>`;
   return `<span class="chip ${d>0?"pos":"neg"}">${d>0?"▲ "+k(d)+" more":"▼ "+k(-d)+" less"} than staying put</span>`}
@@ -295,14 +332,19 @@ function render(){
 
   // answer
   const best=keys.slice().sort((a,b)=>R[b].net-R[a].net)[0];
-  const beB=breakeven("B"),beC=breakeven("C");
-  const be=[beB,beC].filter(x=>x!==null);
-  let a;
-  if(best==="A"||!be.length){a=`<div class="big">Right now, staying put and renting Jeremiah’s Place is the safer and better choice.</div><p class="but">With these numbers, moving costs more than it earns.</p>`}
-  else{const g=R[best].net-R.A.net;
-    a=`<div class="big">Moving downstairs could bring in about ${k(g)} more over ${st.h} years than staying put.</div>
-    <p class="but">But only if we find renters for the 2nd floor within about ${Math.floor(Math.min(...be))} months. Jeremiah’s Place already has two daycares interested; the 2nd floor has none yet.</p>`}
-  $("answer").innerHTML=a;$("answer").style.borderLeftColor=`var(--${best})`;
+  const bestMove=["B","C","D"].reduce((a,b)=>R[a].net>=R[b].net?a:b);
+  const gain=R[bestMove].net-R.A.net;
+  const threshold=secondFloorThreshold(bestMove,st);
+  let vacancyNote;
+  if(threshold===null)vacancyNote=`Option ${bestMove} stays ahead of A even if the second-floor spaces sit empty for all ${st.h} years under these assumptions.`;
+  else if(threshold===0)vacancyNote=`Even with immediate second-floor occupancy, option ${bestMove} does not earn more than A at these costs and rents.`;
+  else vacancyNote=`Option ${bestMove} breaks even with A at about ${Number(threshold.toFixed(1))} months of second-floor vacancy.`;
+  const headline=gain>0
+    ? `Moving downstairs (option ${bestMove}) could bring in about ${k(gain)} more over ${st.h} years than staying put.`
+    : gain<0 ? `Staying put could bring in about ${k(-gain)} more than the best move (option ${bestMove}) over ${st.h} years.`
+    : `Staying put and option ${bestMove} have the same ${st.h}-year total.`;
+  $("answer").innerHTML=`<div class="big">${headline}</div><p class="but">${vacancyNote} Jeremiah’s Place already has two daycares interested. The 2nd floor has none yet.</p>`;
+  $("answer").style.borderLeftColor=`var(--${best})`;
 
   // pick buttons
   $("pick").innerHTML=keys.map(x=>`<button aria-pressed="${x===st.sel}" data-k="${x}" style="--cur:var(--${x})"><span class="l" style="background:var(--${x})">${x}</span><b>${OPT[x].name}</b></button>`).join("");
@@ -327,32 +369,51 @@ function render(){
     <p class="fine" style="margin:12px 0 0">Habitat for Humanity rents the ${SP.HAB.sf.toLocaleString("en-US")} sq ft first-floor storefront in all four options. Each total includes ${dollarsAndCents.format(SP.HAB.monthlyRent)} per month. The lease runs through June 2027. After that, the projection assumes Habitat stays at the same rent.</p>`;
 
   // bars
-  const max=Math.max(...keys.map(x=>R[x].net),1);
+  const min=Math.min(0,...keys.map(x=>R[x].net));
+  const max=Math.max(0,...keys.map(x=>R[x].net));
+  const span=max-min||1;
+  const zero=-min/span*100;
+  $("bars").classList.toggle("signed",min<0);
+  $("bars").style.setProperty("--zero",zero+"%");
   $("cmpNote").textContent=`Money in over ${st.h} years. Tap a bar to see that option.`;
-  $("bars").innerHTML=keys.map(x=>{const w=Math.max(18,R[x].net/max*100);
+  $("bars").innerHTML=keys.map(x=>{const w=Math.abs(R[x].net)/span*100;
     return `<button class="bar" data-k="${x}" aria-pressed="${x===st.sel}"><div class="nm">${x}. ${OPT[x].name.split(" + ")[0].replace("Split: ","Split")}<small>${x==="A"?"starting point":(R[x].net-R.A.net>=0?"+":"−")+k(Math.abs(R[x].net-R.A.net)).replace("−","")+" vs. A"}</small></div>
-    <div class="tr"><i style="width:${w}%;background:var(--${x})"></i><span class="vl">${k(R[x].net)}</span></div></button>`}).join("");
+    <div class="tr"><i style="left:${R[x].net<0?zero-w:zero}%;width:${w}%;background:var(--${x})"></i><span class="vl">${k(R[x].net)}</span></div></button>`}).join("");
   $("bars").querySelectorAll(".bar").forEach(b=>b.onclick=()=>{st.sel=b.dataset.k;render();$("pick").scrollIntoView({behavior:"smooth",block:"start"})});
 
   // watch
-  const yearGain=R.B.steady-R.A.steady;
+  const splitGain=R.D.net-R.A.net;
   $("watch").innerHTML=`
-    <div class="card"><div class="ico">⏳</div><b>Empty space costs money</b><p>${be.length?`If the 2nd floor sits empty more than about ${Math.floor(Math.min(...be))} months, moving stops paying off.`:"At these numbers, moving doesn’t pay off even if the 2nd floor rents quickly."}</p></div>
+    <div class="card"><div class="ico">⏳</div><b>Empty space costs money</b><p>The comparison allows ${st.lag2} months to find second-floor renters and ${st.lagP} months for Jeremiah’s Place and the 3rd Floor Office.</p></div>
     <div class="card"><div class="ico">🏷️</div><b>Lower rent, smaller win</b><p>If renters ask for a discount to fix up their space, the gain from moving shrinks. Try it in “Try different numbers.”</p></div>
-    <div class="card"><div class="ico">🚫</div><b>Option D doesn’t pay off</b><p>It earns about the same as staying put, costs the most to move, and spreads staff over three floors.</p></div>`;
+    <div class="card"><div class="ico">🏢</div><b>Splitting staff across floors</b><p>Option D spreads staff across three floors. Its ${st.h}-year total is ${splitGain===0?"the same as A":money(Math.abs(splitGain))+(splitGain>0?" above A":" below A")}.</p></div>`;
 
   // controls labels
   $("rate").disabled=st.useList;
   $("rateV").textContent=st.useList?"listed (~$24)":"$"+st.rate+" / sq ft";
   $("baseV").textContent=money(st.base);$("moveBCV").textContent=money(st.moveBC);$("moveDV").textContent=money(st.moveD);
+  $("termV").textContent=st.h+" years";
+  $("staffBudgetV").textContent=money(st.staffBudget);
+  $("staffBudgetControl").hidden=st.sameBudget;
+  const recovery=leaseRecovery(st);
+  const payback=st.base===0 ? "No renovation cost to recover." :
+    `At ${dollarsAndCents.format(recovery.monthlyRent)} a month, ${recovery.paidMonths} paid ${recovery.paidMonths===1?"month covers":"months cover"} the ${money(st.base)} renovation.`;
+  const balance=recovery.balance>=0
+    ? `${money(recovery.balance)} remains after renovations`
+    : `${money(-recovery.balance)} of renovations is still uncovered`;
+  $("recovery").innerHTML=`<strong>First-floor tenant lease (option A)</strong>
+    <p>${payback} Over a ${st.h}-year lease, ${dollarsAndCents.format(recovery.monthlyRecovery)} per month would go toward recovering the work.</p>
+    <p>Gross rent over the proposed term is ${money(recovery.termRent)}. At the modeled rate, ${balance}, before operating and financing costs.</p>
+    <p class="fine">The lease term starts with the first paid month. The building totals start today and allow for the initial vacancy.</p>`;
   ["lagP","lag2","lagS"].forEach(id=>$(id+"V").textContent=st[id]+" months");
 
   // table
   const rows=[
     ["Rent per year, once full",x=>money(R[x].steady)],
     ["Habitat storefront rent included above (per year)",()=>dollarsAndCents.format(HABITAT_ANNUAL_RENT)],
-    ["Lost to empty months (year 1)",x=>money(-R[x].vac)],
-    ["Fix‑up + moving costs",x=>money(-R[x].capex)],
+    ["Lost to initial vacancy",x=>money(-R[x].vac)],
+    ["First-floor renovations, paid once",x=>money(-R[x].renovation)],
+    ["Moving and internet, paid once",x=>money(-R[x].moving)],
     [`Money in, ${st.h} years`,x=>money(R[x].net),"total"],
     [`Habitat rent included in ${st.h}-year total`,()=>dollarsAndCents.format(HABITAT_ANNUAL_RENT*st.h)],
     ["Compared with staying put",x=>{const d=R[x].net-R.A.net;return x==="A"?"—":`<span class="${d>=0?"pos":"neg"}">${d>=0?"+":""}${money(d)}</span>`}],
@@ -362,17 +423,19 @@ function render(){
   $("tbl").innerHTML=`<thead><tr><th></th>${keys.map(x=>`<th>${x}</th>`).join("")}</tr></thead><tbody>`+
     rows.map(([l,f,c])=>`<tr class="${c||""}"><td>${l}</td>${keys.map(x=>`<td>${f(x)}</td>`).join("")}</tr>`).join("")+"</tbody>";
 }
+const ranges=["rate","base","staffBudget","h","moveBC","moveD","lagP","lag2","lagS"];
 function sync(){
-  $("useList").checked=st.useList;["rate","base","moveBC","moveD","lagP","lag2","lagS"].forEach(id=>$(id).value=st[id]);
+  $("useList").checked=st.useList;ranges.forEach(id=>$(id).value=st[id]);
+  $("sameBudget").checked=st.sameBudget;
   $("igia").checked=st.igia;document.querySelectorAll(".studio").forEach(c=>c.checked=st.studios[+c.dataset.i]);
-  document.querySelectorAll(".seg button").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.h===st.h));
   render();
 }
-["rate","base","moveBC","moveD","lagP","lag2","lagS"].forEach(id=>$(id).addEventListener("input",e=>{st[id]=+e.target.value;render()}));
+ranges.forEach(id=>$(id).addEventListener("input",e=>{st[id]=+e.target.value;render()}));
+$("sameBudget").addEventListener("change",e=>{st.sameBudget=e.target.checked;render()});
+$("leaseLink").addEventListener("click",()=>{$("tryit").open=true});
 $("useList").addEventListener("change",e=>{st.useList=e.target.checked;render()});
 $("igia").addEventListener("change",e=>{st.igia=e.target.checked;render()});
 document.querySelectorAll(".studio").forEach(c=>c.addEventListener("change",e=>{st.studios[+c.dataset.i]=e.target.checked;render()}));
-document.querySelectorAll(".seg button").forEach(b=>b.addEventListener("click",()=>{st.h=+b.dataset.h;sync()}));
 $("reset").addEventListener("click",()=>{const sel=st.sel;st=JSON.parse(JSON.stringify(DEF));st.sel=sel;sync()});
 sync();
 </script>
